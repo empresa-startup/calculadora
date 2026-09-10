@@ -11,7 +11,6 @@
             box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, sans-serif;
         }
-
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
@@ -20,7 +19,6 @@
             align-items: center;
             padding: 20px;
         }
-
         .container {
             background: white;
             border-radius: 20px;
@@ -29,25 +27,21 @@
             max-width: 420px;
             width: 100%;
         }
-
         h1 {
             text-align: center;
             color: #4a5568;
             font-size: 1.4rem;
             margin-bottom: 25px;
         }
-
         .input-group {
             margin-bottom: 20px;
         }
-
         label {
             display: block;
             margin-bottom: 8px;
             color: #4a5568;
             font-weight: 500;
         }
-
         select, input {
             width: 100%;
             padding: 14px;
@@ -57,12 +51,10 @@
             text-align: center;
             transition: border-color 0.3s;
         }
-
         select:focus, input:focus {
             outline: none;
             border-color: #667eea;
         }
-
         .carga-info {
             background: #e6fffa;
             color: #234e52;
@@ -72,7 +64,6 @@
             font-weight: 600;
             margin-bottom: 20px;
         }
-
         .btn {
             width: 100%;
             padding: 15px;
@@ -86,12 +77,10 @@
             margin-top: 10px;
             transition: transform 0.2s, background 0.3s;
         }
-
         .btn:hover {
             background: #5568d3;
             transform: translateY(-2px);
         }
-
         .resultado {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -100,18 +89,15 @@
             text-align: center;
             margin-top: 25px;
         }
-
         .resultado-label {
             font-size: 0.95rem;
             opacity: 0.9;
             margin-bottom: 8px;
         }
-
         .horario-saida {
             font-size: 2.5rem;
             font-weight: 700;
         }
-
         .intervalo-info {
             margin-top: 12px;
             font-size: 0.9rem;
@@ -126,13 +112,13 @@
         <div class="input-group">
             <label for="carga">📋 Selecione sua Carga Horária</label>
             <select id="carga" onchange="atualizarCarga()">
-                <option value="525">8 horas e 45 minutos</option>
-                <option value="1154">19 horas e 14 minutos</option>
+                <option value="554">✅ 9 horas e 14 minutos</option>
+                <option value="525">✅ 8 horas e 45 minutos</option>
             </select>
         </div>
 
         <div class="carga-info" id="cargaExibida">
-            ✅ Carga selecionada: <strong>8h 45min</strong>
+            ✅ Carga selecionada: <strong>9h 14min</strong>
         </div>
 
         <div class="input-group">
@@ -154,53 +140,52 @@
         </div>
     </div>
 
-    <script>
-        const cargas = {
-            "525": { minutos: 525, texto: "8h 45min" },
-            "1154": { minutos: 1154, texto: "19h 14min" }
-        };
+<script>
+const cargas = {
+    "554": { minutos: 554, texto: "9h 14min" },
+    "525": { minutos: 525, texto: "8h 45min" }
+};
 
-        function atualizarCarga() {
-            const select = document.getElementById('carga');
-            const carga = cargas[select.value];
-            document.getElementById('cargaExibida').innerHTML = 
-                `✅ Carga selecionada: <strong>${carga.texto}</strong>`;
-            calcular();
-        }
+function atualizarCarga() {
+    const select = document.getElementById('carga');
+    const carga = cargas[select.value];
+    document.getElementById('cargaExibida').innerHTML = 
+        `✅ Carga selecionada: <strong>${carga.texto}</strong>`;
+    calcular();
+}
 
-        function calcular() {
-            const entrada = document.getElementById('entrada').value;
-            const intervalo = parseInt(document.getElementById('intervalo').value) || 0;
-            const cargaSelecionada = document.getElementById('carga').value;
-            const carga = cargas[cargaSelecionada];
+function calcular() {
+    const entrada = document.getElementById('entrada').value;
+    const intervalo = parseInt(document.getElementById('intervalo').value) || 0;
+    const cargaSelecionada = document.getElementById('carga').value;
+    const carga = cargas[cargaSelecionada];
 
-            if (!entrada) {
-                alert('Por favor, informe seu horário de entrada!');
-                return;
-            }
+    if (!entrada) {
+        alert('⚠️ Por favor, informe seu horário de entrada!');
+        return;
+    }
 
-            const [hEntrada, mEntrada] = entrada.split(':').map(Number);
-            const minutosEntrada = hEntrada * 60 + mEntrada;
+    const [hEntrada, mEntrada] = entrada.split(':').map(Number);
+    const minutosEntrada = hEntrada * 60 + mEntrada;
+    const minutosSaida = minutosEntrada + carga.minutos + intervalo;
+    const hSaida = Math.floor(minutosSaida / 60) % 24;
+    const mSaida = minutosSaida % 60;
 
-            const minutosSaida = minutosEntrada + carga.minutos + intervalo;
+    const horarioSaida = `${String(hSaida).padStart(2, '0')}:${String(mSaida).padStart(2, '0')}`;
+    document.getElementById('saida').textContent = horarioSaida;
 
-            const hSaida = Math.floor(minutosSaida / 60) % 24;
-            const mSaida = minutosSaida % 60;
+    let dias = Math.floor(minutosSaida / (24 * 60));
+    let infoDias = dias > 0 ? ` (${dias} dia seguinte)` : '';
 
-            const horarioSaida = `${String(hSaida).padStart(2, '0')}:${String(mSaida).padStart(2, '0')}`;
+    document.getElementById('detalhes').textContent = 
+        `Entrada: ${entrada} | Carga: ${carga.texto} | Intervalo: ${intervalo}min${infoDias}`;
 
-            document.getElementById('saida').textContent = horarioSaida;
-            document.getElementById('detalhes').textContent = 
-                `Entrada: ${entrada} | Carga: ${carga.texto} | Intervalo: ${intervalo}min`;
-            document.getElementById('resultado').style.display = 'block';
-        }
+    document.getElementById('resultado').style.display = 'block';
+}
 
-        document.querySelectorAll('input, select').forEach(el => {
-            el.addEventListener('change', calcular);
-            el.addEventListener('keypress', e => {
-                if (e.key === 'Enter') calcular();
-            });
-        });
-    </script>
+document.querySelectorAll('input, select').forEach(el => {
+    el.addEventListener('change', calcular);
+});
+</script>
 </body>
 </html>
